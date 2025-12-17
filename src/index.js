@@ -1,24 +1,31 @@
-require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+require("dotenv").config();
+const { Client, GatewayIntentBits } = require("discord.js");
+const { startWaterVoiceReminder } = require("./voiceReminder");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates,
+  ],
 });
 
-client.once('ready', () => {
+// discord.js v15
+client.once("clientReady", () => {
   console.log(`🤖 Bot online como ${client.user.tag}`);
+  startWaterVoiceReminder(client);
 });
 
-client.on('interactionCreate', async interaction => {
+client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === 'agua') {
-    const { handleAgua } = require('./commands/agua.handler');
+  if (interaction.commandName === "agua") {
+    const { handleAgua } = require("./commands/agua.handler");
     await handleAgua(interaction);
+    return;
   }
 
-  if (interaction.commandName === 'ranking') {
-    const { handleRanking } = require('./commands/ranking.handler');
+  if (interaction.commandName === "ranking") {
+    const { handleRanking } = require("./commands/ranking.handler");
     await handleRanking(interaction);
   }
 });
